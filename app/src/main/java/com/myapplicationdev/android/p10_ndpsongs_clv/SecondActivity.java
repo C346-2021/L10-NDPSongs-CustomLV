@@ -17,6 +17,8 @@ public class SecondActivity extends AppCompatActivity {
 	ListView lv;
     ArrayList<Song> songList;
 	ArrayAdapter adapter;
+	String moduleCode;
+	int requestCode = 9;
     Button btn5Stars;
 
 	@Override
@@ -41,7 +43,7 @@ public class SecondActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(SecondActivity.this, ThirdActivity.class);
                 i.putExtra("song", songList.get(position));
-                startActivity(i);
+                startActivityForResult(i, requestCode);
             }
         });
 
@@ -56,15 +58,18 @@ public class SecondActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        DBHelper dbh = new DBHelper(this);
-        songList.clear();
-        songList.addAll(dbh.getAllSongs());
-        dbh.close();
-        adapter.notifyDataSetChanged();
-    }
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == this.requestCode && resultCode == RESULT_OK){
+			DBHelper dbh = new DBHelper(this);
+            songList.clear();
+            songList.addAll(dbh.getAllSongs());
+            dbh.close();
+            adapter.notifyDataSetChanged();
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
 
 }
